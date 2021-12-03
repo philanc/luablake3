@@ -35,7 +35,7 @@ luablake3.so:  src/*.c src/*.h
 	$(CC)  $(LDFLAGS) -o luablake3.so *.o
 
 test:  luablake3.so
-	$(LUA) test_luablake3.lua
+	$(LUA) test.lua
 	
 clean:
 	rm -f *.o *.a *.so
