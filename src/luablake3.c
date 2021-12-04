@@ -86,10 +86,11 @@ static int ll_init_derive_key(lua_State *L) {
 	// lua api:  init_derive_key(context) => hasher object (userdata)
 	// context is a string which should be hardcoded, globally 
 	// unique, and application-specific (see the BLAKE3 paper)
-	const char *context = luaL_checkstring(L, 1);
+	size_t cln = 0;
+	const char *context = luaL_checklstring(L, 1, &cln);
 	size_t size = sizeof(blake3_hasher);
 	blake3_hasher *p_hasher = lua_newuserdata(L, size);
-	blake3_hasher_init_derive_key(p_hasher, context);	
+	blake3_hasher_init_derive_key_raw(p_hasher, context, cln);	
 	return 1;
 } 
 
