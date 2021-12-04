@@ -4,13 +4,10 @@
 lb = require"luablake3"
 
 ------------------------------------------------------------------------
--- some local definitions
+-- some local utilities
 
 local strf = string.format
 local byte, char = string.byte, string.char
-local spack, sunpack = string.pack, string.unpack
-
-local app, concat = table.insert, table.concat
 
 local function stohex(s, ln, sep)
 	-- stohex(s [, ln [, sep]])
@@ -37,24 +34,20 @@ local function stohex(s, ln, sep)
 	end
 	-- last byte, without any sep appended
 	t[#t + 1] = strf("%02x", s:byte(#s))
-	return concat(t)	
+	return table.concat(t)	
 end --stohex()
 
-local function hextos(hs, unsafe)
+local function hextos(hs)
 	-- decode an hex encoded string. return the decoded string
-	-- if optional parameter unsafe is defined, assume the hex
-	-- string is well formed (no checks, no whitespace removal).
-	-- Default is to remove white spaces (incl newlines)
-	-- and check that the hex string is well formed
-	local tonumber = tonumber
-	if not unsafe then
-		hs = string.gsub(hs, "%s+", "") -- remove whitespaces
-		if string.find(hs, '[^0-9A-Za-z]') or #hs % 2 ~= 0 then
+	-- whitespace (space, tabs, CR, NL), is ignored
+	-- hex string must be  well formed (only pairs of hex digits)
+	hs = string.gsub(hs, "%s+", "") -- remove whitespaces
+	if string.find(hs, '[^0-9A-Za-z]') or #hs % 2 ~= 0 then
 			error("invalid hex string")
-		end
 	end
-	return (hs:gsub(	'(%x%x)', 
-		function(c) return char(tonumber(c, 16)) end
+	local tonumber = tonumber
+	return (hs:gsub('(%x%x)', 
+		   function(c) return char(tonumber(c, 16)) end
 		))
 end -- hextos
 
@@ -72,7 +65,7 @@ print("------------------------------------------------------------")
 
 hr = lb.init()
 lb.update(hr, "Hello, World!")
-dig = lb.final(hr, 65)
+dig = lb.final(hr, 65) -- get a 65-byte hash
 assert(dig == hextos[[
 	288a86a79f20a3d6dccdca7713beaed1
 	78798296bdfa7913fa2a62d9727bf8f8
@@ -81,7 +74,7 @@ assert(dig == hextos[[
 	04
 ]])
 lb.update(hr, "!!")
-dig = lb.final(hr)
+dig = lb.final(hr) -- get a default, 32-byte hash
 assert(dig == hextos[[
 	ab04a6c9b4bbdfcb66dccef112d9e6f3
 	99788de1bfe5005ef857756e7a4a5396

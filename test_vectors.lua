@@ -270,32 +270,28 @@ local function stohex(s, ln, sep)
 	end
 	-- last byte, without any sep appended
 	t[#t + 1] = strf("%02x", s:byte(#s))
-	return concat(t)	
+	return table.concat(t)	
 end --stohex()
 
-local function hextos(hs, unsafe)
+local function hextos(hs)
 	-- decode an hex encoded string. return the decoded string
-	-- if optional parameter unsafe is defined, assume the hex
-	-- string is well formed (no checks, no whitespace removal).
-	-- Default is to remove white spaces (incl newlines)
-	-- and check that the hex string is well formed
-	local tonumber = tonumber
-	if not unsafe then
-		hs = string.gsub(hs, "%s+", "") -- remove whitespaces
-		if string.find(hs, '[^0-9A-Za-z]') or #hs % 2 ~= 0 then
+	-- whitespace (space, tabs, CR, NL), is ignored
+	-- hex string must be  well formed (only pairs of hex digits)
+	hs = string.gsub(hs, "%s+", "") -- remove whitespaces
+	if string.find(hs, '[^0-9A-Za-z]') or #hs % 2 ~= 0 then
 			error("invalid hex string")
-		end
 	end
-	return (hs:gsub(	'(%x%x)', 
-		function(c) return char(tonumber(c, 16)) end
+	local tonumber = tonumber
+	return (hs:gsub('(%x%x)', 
+		   function(c) return char(tonumber(c, 16)) end
 		))
 end -- hextos
+
 
 local function px(s, msg) 
 	print("--", msg or "")
 	print(stohex(s, 16, " ")) 
 end
-
 
 
 ------------------------------------------------------------------------
