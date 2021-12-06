@@ -1,4 +1,4 @@
-![CI](https://github.com/philanc/lualblake3/workflows/CI/badge.svg)
+![CI](https://github.com/philanc/luablake3/workflows/CI/badge.svg)
 
 # luablake3
 Lua binding for the BLAKE3 cryptographic hash
